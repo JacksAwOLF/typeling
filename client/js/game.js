@@ -49,7 +49,7 @@ Writing objects: 100% (4/4), 334 bytes | 334.00 KiB/s, done.
 Total 4 (delta 2), reused 0 (delta 0), pack-reused 0
 remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
 To https://github.com/JacksAwOLF/typeling.git
-   808c013..206f6fd  main -> main
+808c013..206f6fd  main -> main
 victorchen@Victors-MacBook-Pro typeling %`;
 const text = str.toString();
 wordBank = text.split("\n");
@@ -76,21 +76,12 @@ let words = [];
 const wordHeight = 20;
 const mainLaneY = (window.innerHeight - wordHeight) / 2;
 
-// const createNewWord = function (text) {
-//   words.push({
-//     x: window.innerWidth,
-//     speed: 1,
-//     text: text,
-//   });
-//   return words.length - 1;
-// };
-
 const lanes = [];
 
 // set up game
 const init = function () {
   // tower
-  tower.xCutoffPercentage = 0.3;
+  tower.xCutoffPercentage = 0.25;
   tower.health = 10;
 
   // main lane
@@ -132,6 +123,8 @@ const addNewWord = function (i) {
 // update variables
 const update = function (delta) {
   if (txtReady) {
+    ctx.font = mainTextFont;
+    ctx.fillStyle = mainTextColor;
     for (let i = 0; i < lanes.length; i++) {
       if (lanes[i].wordInd === -1) {
         addNewWord(i);
@@ -153,9 +146,14 @@ const update = function (delta) {
       for (let j = 0; j < lanes[i].words.length; j++) {
         lanes[i].words[j].x -= lanes[i].words[j].spd;
 
-        // check if hit the tower, if hit
-
-        // update previous word
+        // check if hit the tower
+        if (lanes[i].words[j].x < window.innerWidth * tower.xCutoffPercentage) {
+          tower.health -= 1;
+          console.log(lanes[i].words, "removing ", j);
+          lanes[i].words.splice(j, 1); // remove word
+          console.log(lanes[i].words, "afterwarads");
+          if (lanes[i].lastWordInd > j) lanes[i].lastWordInd -= 1; // update previous word
+        }
       }
     }
   }
@@ -181,15 +179,15 @@ const render = function () {
   ctx.beginPath();
   const lineX = canvas.width * tower.xCutoffPercentage;
   ctx.moveTo(lineX, 0);
-  ctx.lineTo(lineX, window.innerHeight);
+  ctx.lineTo(lineX, canvas.height);
   ctx.lineWidth = 10;
   ctx.stroke();
 
   // draw the lanes
 
   // draw the words
-  ctx.font = "100px Comic Sans Ms";
-  ctx.fillStyle = "black";
+  ctx.font = mainTextFont;
+  ctx.fillStyle = mainTextColor;
   for (let i = 0; i < lanes.length; i++) {
     for (let j = 0; j < lanes[i].words.length; j++) {
       const word = lanes[i].words[j];
