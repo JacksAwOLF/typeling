@@ -22,20 +22,38 @@ const tower = {};
 // set up game
 const init = function () {
   // tower
-  tower.x = 0;
-  tower.y = 0;
-  tower.width = 100;
-  tower.height = 500;
+  tower.xCutoffPercentage = 0.3;
   tower.health = 10;
 };
 
 // update variables
-const update = function () {};
+const update = function (delta) {};
 
 // render game
 const render = function () {
-  if (bgReady)
+  // draw background image
+  if (bgReady) {
     ctx.drawImage(bgImage, 0, 0, window.innerWidth, window.innerHeight);
+  }
+
+  // draw tower vertical line
+  ctx.beginPath();
+  const lineX = window.innerWidth * tower.xCutoffPercentage;
+  ctx.moveTo(lineX, 0);
+  ctx.lineTo(lineX, window.innerHeight);
+  ctx.lineWidth = 10;
+  ctx.stroke();
+
+  // draw the lanes
+
+  // draw the words
+};
+
+canvas.onwheel = (e) => {
+  e.preventDefault();
+};
+canvas.onmousewheel = (e) => {
+  e.preventDefault();
 };
 
 const main = function () {
