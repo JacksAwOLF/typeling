@@ -3,6 +3,12 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.screen.width;
 canvas.height = window.screen.height;
+canvas.onwheel = (e) => {
+  e.preventDefault();
+};
+canvas.onmousewheel = (e) => {
+  e.preventDefault();
+};
 document.body.appendChild(canvas);
 
 // background image
@@ -47,13 +53,6 @@ const render = function () {
   // draw the lanes
 
   // draw the words
-};
-
-canvas.onwheel = (e) => {
-  e.preventDefault();
-};
-canvas.onmousewheel = (e) => {
-  e.preventDefault();
 };
 
 const main = function () {
