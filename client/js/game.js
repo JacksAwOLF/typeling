@@ -1,14 +1,14 @@
 // Create the canvas
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
-canvas.width = 720;
-canvas.height = 405;
-canvas.onwheel = (e) => {
-  e.preventDefault();
-};
-canvas.onmousewheel = (e) => {
-  e.preventDefault();
-};
+canvas.width = 1024;
+canvas.height = 720;
+// canvas.onwheel = (e) => {
+//   e.preventDefault();
+// };
+// canvas.onmousewheel = (e) => {
+//   e.preventDefault();
+// };
 canvas.style =
   "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
 document.body.appendChild(canvas);
@@ -91,6 +91,7 @@ const init = function () {
     lineInd: -1,
     wordInd: -1,
     words: [],
+    spd: 1,
   });
 };
 
@@ -112,7 +113,6 @@ const addNewWord = function (i) {
   lanes[i].words.push({
     x: canvas.width,
     y: lanes[i].y,
-    spd: 5,
     text: wordBank[lanes[i].lineInd][lanes[i].wordInd],
   });
 
@@ -136,7 +136,7 @@ const update = function (delta) {
       const prevWord = lanes[i].words[lanes[i].lastWordInd];
 
       // draw a new word if previous word scrolled past the screen
-      if (prevWord.x + wordLen < canvas.width) {
+      if (prevWord !== undefined && prevWord.x + wordLen < canvas.width) {
         addNewWord(i);
       }
     }
@@ -144,14 +144,12 @@ const update = function (delta) {
     // update each word x position in each lane
     for (let i = 0; i < lanes.length; i++) {
       for (let j = 0; j < lanes[i].words.length; j++) {
-        lanes[i].words[j].x -= lanes[i].words[j].spd;
+        lanes[i].words[j].x -= lanes[i].spd;
 
         // check if hit the tower
-        if (lanes[i].words[j].x < window.innerWidth * tower.xCutoffPercentage) {
+        if (lanes[i].words[j].x < canvas.width * tower.xCutoffPercentage) {
           tower.health -= 1;
-          console.log(lanes[i].words, "removing ", j);
           lanes[i].words.splice(j, 1); // remove word
-          console.log(lanes[i].words, "afterwarads");
           if (lanes[i].lastWordInd > j) lanes[i].lastWordInd -= 1; // update previous word
         }
       }
