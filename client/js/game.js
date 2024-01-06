@@ -23,6 +23,23 @@ let lanes = [
   },
 ];
 
+const start = Date.now();
+let wordsTyped = 0;
+
+function WPM() {
+  let timeElapsed = (Date.now() - start) / 60000;
+  return Math.round(wordsTyped / timeElapsed);
+}
+
+function displayWPM() {
+  let wpm = wordsTyped === 0 ? 0 : WPM();
+
+  ctx.font = mainTextFont;
+  ctx.fillStyle = mainTextColor;
+
+  ctx.fillText(wpm + " WPM", 150, 150);
+}
+
 const str = `# rm all files
 git rm -r --cached .
 # add all files as per new .gitignore
@@ -52,6 +69,7 @@ const inputOnKeyDown = (e) => {
         if (val === word.text && word.x < canvas.width) {
           removeWord(i, j);
           e.target.value = "";
+          wordsTyped++;
           break;
         }
       }
@@ -197,7 +215,7 @@ const render = function () {
     }
   }
 
-  // ctx.fillText("Hello", 10, 50);
+  displayWPM();
 };
 
 let then = Date.now();
