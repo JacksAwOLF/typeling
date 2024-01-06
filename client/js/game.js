@@ -3,6 +3,7 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = 1024;
 canvas.height = 720;
+canvas.id = "canvas";
 // canvas.onwheel = (e) => {
 //   e.preventDefault();
 // };
@@ -13,11 +14,37 @@ canvas.style =
   "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
 document.body.appendChild(canvas);
 
+// global variables
+let txtReady = false;
+let wordBank = [];
+let lanes = [];
+
+const removeWord = function (i, j) {
+  lanes[i].words.splice(j, 1); // remove word
+  if (lanes[i].lastWordInd > j) lanes[i].lastWordInd -= 1; // update previous word
+};
+
 // create the word input box
 // or should we just draw this in the canvas?
-// const wordInput = document.createElement("input");
-// word
-// document.body.appendChild(wordInput);
+const wordInput = document.createElement("input");
+wordInput.style = "position: absolute; top: 80%; left: 40%;";
+wordInput.onkeydown = (e) => {
+  if (e.key === " " || e.key === "Enter") {
+    const val = e.target.value.trim();
+    for (let i = 0; i < lanes.length; i++) {
+      for (let j = 0; j < lanes[i].words.length; j++) {
+        if (val === lanes[i].words[j].text) {
+          removeWord(i, j);
+          e.target.value = "";
+          break;
+        }
+      }
+    }
+  }
+
+  if (e.key === " ") e.preventDefault();
+};
+document.body.appendChild(wordInput);
 
 // background image
 let bgReady = false;
@@ -28,8 +55,6 @@ bgImage.onload = function () {
 bgImage.src = "images/plantsVzombies.jpeg";
 
 // fetch text
-let txtReady = false;
-let wordBank = [];
 
 // const fs = require("fs");
 // fs.readFile("wordbank/test.txt", (err, data) => {
@@ -41,16 +66,12 @@ let wordBank = [];
 //   txtReady = true;
 // });
 
-const str = `Enumerating objects: 7, done.
-Counting objects: 100% (7/7), done.
-Delta compression using up to 10 threads
-Compressing objects: 100% (3/3), done.
-Writing objects: 100% (4/4), 334 bytes | 334.00 KiB/s, done.
-Total 4 (delta 2), reused 0 (delta 0), pack-reused 0
-remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
-To https://github.com/JacksAwOLF/typeling.git
-808c013..206f6fd  main -> main
-victorchen@Victors-MacBook-Pro typeling %`;
+const str = `# rm all files
+git rm -r --cached .
+# add all files as per new .gitignore
+git add .
+# now, commit for new .gitignore to apply
+git commit -m ".gitignore is now working"`;
 const text = str.toString();
 wordBank = text.split("\n");
 wordBank = wordBank.map((line) => line.split(" "));
@@ -76,8 +97,6 @@ let words = [];
 const wordHeight = 20;
 const mainLaneY = (window.innerHeight - wordHeight) / 2;
 
-const lanes = [];
-
 // set up game
 const init = function () {
   // tower
@@ -97,7 +116,7 @@ const init = function () {
 
 const mainLaneInd = 0;
 
-const addNewWord = function (i) {
+const addWordToLane = function (i) {
   lanes[i].wordInd += 1;
 
   // pick a new line if no line picked or all words are draw on the current line
@@ -127,17 +146,17 @@ const update = function (delta) {
     ctx.fillStyle = mainTextColor;
     for (let i = 0; i < lanes.length; i++) {
       if (lanes[i].wordInd === -1) {
-        addNewWord(i);
+        addWordToLane(i);
         continue;
       }
 
       const prevText = wordBank[lanes[i].lineInd][lanes[i].wordInd];
-      const wordLen = ctx.measureText(prevText + " ").width;
+      const wordLen = ctx.measureText(prevText + "  ").width;
       const prevWord = lanes[i].words[lanes[i].lastWordInd];
 
       // draw a new word if previous word scrolled past the screen
       if (prevWord !== undefined && prevWord.x + wordLen < canvas.width) {
-        addNewWord(i);
+        addWordToLane(i);
       }
     }
 
@@ -149,8 +168,7 @@ const update = function (delta) {
         // check if hit the tower
         if (lanes[i].words[j].x < canvas.width * tower.xCutoffPercentage) {
           tower.health -= 1;
-          lanes[i].words.splice(j, 1); // remove word
-          if (lanes[i].lastWordInd > j) lanes[i].lastWordInd -= 1; // update previous word
+          removeWord(i, j);
         }
       }
     }
