@@ -1,6 +1,6 @@
 // Create the canvas
-let canvas = document.createElement("canvas");
-let ctx = canvas.getContext("2d");
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
 canvas.width = window.screen.width;
 canvas.height = window.screen.height;
 document.body.appendChild(canvas);
@@ -13,17 +13,29 @@ bgImage.onload = function () {
 };
 bgImage.src = "images/plantsVzombies.jpeg";
 
+// tower image
+
 // game objects
+const tower = {};
+// const
 
 // set up game
-const reset = function () {};
+const init = function () {
+  // tower
+  tower.x = 0;
+  tower.y = 0;
+  tower.width = 100;
+  tower.height = 500;
+  tower.health = 10;
+};
 
 // update variables
 const update = function () {};
 
 // render game
 const render = function () {
-  if (bgReady) ctx.drawImage(bgImage, 0, 0);
+  if (bgReady)
+    ctx.drawImage(bgImage, 0, 0, window.innerWidth, window.innerHeight);
 };
 
 const main = function () {
@@ -46,5 +58,5 @@ requestAnimationFrame =
 
 let then = Date.now();
 
-reset();
+init();
 main();
