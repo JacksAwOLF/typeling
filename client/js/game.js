@@ -1,6 +1,7 @@
 import { lanes, removeWord, addWordToLane, renderWords } from "./lane.js";
 import { incWordsTyped, renderStats, startTimer, takeDamage } from "./stats.js";
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
+import { specialHighlightedSpan } from "./specials.js";
 
 // Create the canvas
 const canvas = document.createElement("canvas");
@@ -18,6 +19,13 @@ wordInput.style =
   "width: 1024px; height: 40px; font-size: 30px; text-align: center; border: None; outline: none;";
 wordInput.onkeydown = (e) => {
   if (e.key === " " || e.key === "Enter") {
+    // check special text
+    if (val === specialText[specialPos]) {
+      specialPos++;
+      e.target.value = "";
+    }
+
+    // check lanes
     const val = e.target.value.trim();
     for (let i = 0; i < lanes.length; i++) {
       for (let j = 0; j < lanes[i].words.length; j++) {
@@ -37,7 +45,8 @@ wordInput.onkeydown = (e) => {
 
 // special abilities paragraph and number activated buttons
 // create a div for the paragraph and buttons
-let specialText = "Start Text";
+let specialText = [];
+let specialPos = 0;
 const button1 = document.createElement("button");
 const button2 = document.createElement("button");
 const button3 = document.createElement("button");
@@ -46,13 +55,16 @@ button1.innerHTML = "1: Scientific Names";
 button2.innerHTML = "2: Spanish";
 button3.innerHTML = "3: Programming";
 button1.onclick = () => {
-  specialText = "button1";
+  specialText = ["button1"];
+  specialPos = 0;
 };
 button2.onclick = () => {
-  specialText = "button2";
+  specialText = ["button2"];
+  specialPos = 0;
 };
 button3.onclick = () => {
-  specialText = "button3";
+  specialText = ["button3"];
+  specialPos = 0;
 };
 
 const buttonDiv = document.createElement("div");
@@ -141,6 +153,12 @@ const render = function () {
 
   renderWords(ctx);
   renderStats(ctx);
+
+  // draw the special text
+  specialDiv.children[0].innerHTML = specialHighlightedSpan(
+    specialText,
+    specialPos
+  );
 };
 
 let then = Date.now();
