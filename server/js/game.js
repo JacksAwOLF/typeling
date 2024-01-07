@@ -23,7 +23,7 @@ import {
 
 let specialText = [];
 let specialPos = 0;
-let specialType = 0;
+let specialType = "scientific";
 import { renderMatchingScreen, onClickCanvas } from "./menu.js";
 
 // Create the canvas
@@ -49,7 +49,7 @@ wordInput.onkeydown = (e) => {
       specialPos++;
       e.target.value = "";
 
-      if (specialPos === soecialText.length) {
+      if (specialPos === specialText.length) {
         specialPos = 0;
         specialText = []; // TODO: update Special Text
         console.log("sending special", otherId, specialType);
