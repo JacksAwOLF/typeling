@@ -7,8 +7,8 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = canvW;
 canvas.height = canvH;
-canvas.style =
-  "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
+// canvas.style =
+//   "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
 document.body.appendChild(canvas);
 
 // create the word input box
