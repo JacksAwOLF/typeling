@@ -1,11 +1,12 @@
 import { lanes, removeWord, addWordToLane, renderWords } from "./lane.js";
 import { incWordsTyped, renderHealth, renderWPM, takeDamage } from "./wpm.js";
+import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
 
 // Create the canvas
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
-canvas.width = 1024;
-canvas.height = 720;
+canvas.width = canvW;
+canvas.height = canvH;
 canvas.style =
   "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
 document.body.appendChild(canvas);
@@ -48,9 +49,6 @@ const leftWidth = 0;
 // bottomw bar to view special attack and charging
 const bottomHeight = 0;
 
-// percentage of screen where words deal damage
-const xCutoffPercentage = 0.25;
-
 // set up game
 const init = function () {};
 
@@ -63,7 +61,7 @@ const update = function (delta) {
 
   for (let i = 0; i < lanes.length; i++) {
     while (lanes[i].words.length < 50) {
-      addWordToLane(i, ctx, canvas.width);
+      addWordToLane(i, ctx);
     }
   }
 

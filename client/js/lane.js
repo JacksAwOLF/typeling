@@ -1,9 +1,11 @@
+import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
+
 // global variables
 let txtReady = false;
 let wordBank = [];
-const wordHeight = 20;
-const mainLaneY = (window.innerHeight - wordHeight) / 2;
-const mainTextFont = "30px Comic Sans Ms";
+const wordHeight = 15;
+const mainLaneY = (canvH + wordHeight) / 2;
+const mainTextFont = wordHeight + "px Comic Sans Ms";
 const mainTextColor = "black";
 export let lanes = [
   {
@@ -12,7 +14,7 @@ export let lanes = [
     lineInd: -1,
     wordInd: -1,
     words: [],
-    pps: 100, // pixels per second
+    pps: 80, // pixels per second
   },
 ];
 
@@ -35,7 +37,7 @@ export function removeWord(i, j) {
 }
 
 // add new word to lane i
-export function addWordToLane(i, ctx, canvW) {
+export function addWordToLane(i, ctx) {
   ctx.font = mainTextFont;
   ctx.fillStyle = mainTextColor;
   lanes[i].wordInd += 1;
@@ -69,11 +71,19 @@ export function addWordToLane(i, ctx, canvW) {
 }
 
 export function renderWords(ctx) {
-  ctx.font = mainTextFont;
-  ctx.fillStyle = mainTextColor;
   for (let i = 0; i < lanes.length; i++) {
+    ctx.fillStyle = "white";
+    ctx.fillRect(
+      canvW * xCutoffPercentage,
+      lanes[i].y - wordHeight,
+      canvW,
+      wordHeight + 5
+    );
+
     for (let j = 0; j < lanes[i].words.length; j++) {
       const word = lanes[i].words[j];
+      ctx.font = mainTextFont;
+      ctx.fillStyle = mainTextColor;
       ctx.fillText(word.text, word.x, word.y);
     }
   }

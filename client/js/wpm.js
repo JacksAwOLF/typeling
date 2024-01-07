@@ -24,3 +24,6 @@ export function renderHealth(ctx) {
   // ctx.fillStyle = mainTextColor;
   ctx.fillText("Health: " + health, 50, 200);
 }
+
+const start = Date.now();
+// export function
