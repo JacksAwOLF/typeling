@@ -5,7 +5,14 @@ import {
   renderWords,
   incPPS,
 } from "./lane.js";
-import { incWordsTyped, renderStats, startTimer, takeDamage } from "./stats.js";
+import {
+  incWordsTyped,
+  renderStats,
+  startTimer,
+  takeDamage,
+  getHealth,
+  getWPM,
+} from "./stats.js";
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
 import { specialHighlightedSpan, sendSpecial } from "./specials.js";
 
@@ -123,6 +130,7 @@ addWordToLane(0, ctx);
 
 const start = Date.now();
 let lastRequested = Date.now();
+let lastSent = Date.now();
 // update variables
 const update = function (delta) {
   if (menu) return;
@@ -151,7 +159,18 @@ const update = function (delta) {
       }
     }
   }
+
+  if (Date.now() - lastSent > 1000) {
+    lastSent = Date.now();
+    socket.emit("transmit_info_to_room", {
+      player_id: myId,
+      health: getHealth(),
+      wpm: getWPM(),
+    });
+  }
 };
+
+// setInterval();
 
 let menu = true;
 
@@ -164,6 +183,16 @@ canvas.addEventListener(
   },
   false
 );
+
+let otherHealth = 0;
+let otherWPM = 0;
+
+socket.on("transmit_info_to_room", (data) => {
+  if (data.player_id === myId) return;
+  otherHealth = data.health;
+  otherWPM = data.wpm;
+  console.log(data);
+});
 
 // render game
 const render = function () {
@@ -196,6 +225,13 @@ const render = function () {
 
   renderWords(ctx);
   renderStats(ctx);
+  // let otherHealth = 0;
+  // let otherWPM = 0;
+
+  ctx.font = "20px Times New Roman";
+  ctx.fillStyle = "black";
+  ctx.fillText("Other Player Health " + otherHealth, 50, 250);
+  ctx.fillText("Other Player WPM " + otherWPM, 50, 280);
 
   // draw the special text
   specialDiv.children[0].innerHTML = specialHighlightedSpan(

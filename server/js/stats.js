@@ -17,6 +17,16 @@ export function takeDamage() {
   }
 }
 
+export function getHealth() {
+  return health;
+}
+
+export function getWPM() {
+  const newList = wordTimes.filter((x) => Date.now() - x < 1000 * 60);
+  wordTimes = newList;
+  return newList.length;
+}
+
 let start = Date.now();
 export function startTimer() {
   start = Date.now();
@@ -36,13 +46,12 @@ export function renderStats(ctx) {
   }
 
   ctx.fillStyle = "white";
-  ctx.fillRect(30, 100, 180, 250);
+  ctx.fillRect(30, 100, 200, 250);
 
   ctx.font = "20px Times New Roman";
   ctx.fillStyle = "black";
-  const newList = wordTimes.filter((x) => Date.now() - x < 1000 * 60);
-  wordTimes = newList;
-  ctx.fillText(newList.length + " WPM", 50, 150);
+
+  ctx.fillText(getWPM() + " WPM", 50, 150);
 
   ctx.fillText("Health: " + health, 50, 180);
 
