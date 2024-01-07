@@ -26,5 +26,6 @@ export function onClickCanvas(x, y) {
   ) {
     // button is clicked
     socket.emit("find_match");
+    console.log("button clicked");
   }
 }
