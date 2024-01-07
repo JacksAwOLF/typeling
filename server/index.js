@@ -82,7 +82,7 @@ class Room {
 
     io.to(this.room_id).emit("room_created", {
       room_id: this.room_id,
-      players: this.player_id,
+      players: this.player_ids,
     });
 
     this.last_queue_words = 0;
