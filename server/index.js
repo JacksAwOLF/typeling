@@ -53,6 +53,7 @@ const english = new WordBank("wordbank/english-words.txt");
 const scientific = new WordBank("wordbank/scientific-names.txt");
 const spanish = new WordBank("wordbank/spanish.txt");
 const gibberish = new WordBank("wordbank/gibberish.txt");
+const paragraphs = new WordBank("wordbank/paragraphs.txt");
 
 class Room {
   constructor(players) {
@@ -72,7 +73,7 @@ class Room {
       player.on("attack_player", (data) => {
         this.sendAttack(data.player_id, data.type);
       });
-
+      player.on("request_paragraph", () => this.sendParagraph());
       player.on("request_words", () => this.queueWords());
       player.on("leave_room", () => this.leaveRoom(player));
       player.on("disconnect", (reason) => {
@@ -118,15 +119,22 @@ class Room {
     this.last_queue_words = Date.now();
     io.to(this.room_id).emit("add_words", { words: english.getBatch() });
   };
+  sendParagraph = () => {
+    let p = paragraphs.getBatch(1)[0];
+    console.log(p);
+    io.to(this.room_id).emit("send_paragraph", {
+      paragraph: p,
+    });
+  };
 }
 
 io.on("connection", (client) => {
   client.emit("connection_confirmed", { id: client.id });
   client.on("find_match", () => {
     for (let queued_player of players) {
-        if (client.id === queued_player.id) {
-            return;
-        }
+      if (client.id === queued_player.id) {
+        return;
+      }
     }
 
     players.push(client);
