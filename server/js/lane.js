@@ -14,9 +14,24 @@ export let lanes = [
     lineInd: -1,
     wordInd: -1,
     words: [],
-    pps: 80, // pixels per second
+    pps: 20, // pixels per second
   },
 ];
+// y=\left(\frac{1}{4}x^{1.5}+20\right)
+let lastModVal = -1;
+export function incPPS(sinceStart) {
+  // const secs = 5;
+  // const inc = 5;
+
+  // const thisModVal = Math.floor(sinceStart) % secs;
+  // console.log(lastModVal, thisModVal);
+  // if (lastModVal === inc - 1 && thisModVal === 0) {
+  //   lanes[0].pps += inc;
+  // }
+  // lastModVal = thisModVal;
+  const xx = Math.floor(sinceStart);
+  lanes[0].pps = Math.min(80, 20 + xx ** 1.5 / 16);
+}
 
 const str = `# rm all files
 git rm -r --cached .
@@ -61,7 +76,7 @@ export function addWordToLane(i, ctx) {
     x:
       lastWord === undefined
         ? canvW
-        : lastWord.x + ctx.measureText(lastWord.text + " ").width,
+        : lastWord.x + ctx.measureText(lastWord.text + "  ").width,
     y: lanes[i].y,
     text: wordBank[lanes[i].lineInd][lanes[i].wordInd],
   });
@@ -86,5 +101,7 @@ export function renderWords(ctx) {
       ctx.fillStyle = mainTextColor;
       ctx.fillText(word.text, word.x, word.y);
     }
+
+    ctx.fillText("PPS: " + lanes[i].pps, 0, 500);
   }
 }

@@ -1,4 +1,10 @@
-import { lanes, removeWord, addWordToLane, renderWords } from "./lane.js";
+import {
+  lanes,
+  removeWord,
+  addWordToLane,
+  renderWords,
+  incPPS,
+} from "./lane.js";
 import { incWordsTyped, renderStats, startTimer, takeDamage } from "./stats.js";
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
 
@@ -91,10 +97,12 @@ const leftWidth = 0;
 // bottomw bar to view special attack and charging
 const bottomHeight = 0;
 
+const start = Date.now();
 // update variables
 const update = function (delta) {
   // if (txtReady) {
   // add words if necessary
+  incPPS((Date.now() - start) / 1000);
 
   for (let i = 0; i < lanes.length; i++) {
     while (lanes[i].words.length < 50) {
