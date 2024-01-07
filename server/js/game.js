@@ -14,7 +14,11 @@ import {
   getWPM,
 } from "./stats.js";
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
-import { specialHighlightedSpan, sendSpecial } from "./specials.js";
+import {
+  specialHighlightedSpan,
+  sendSpecial,
+  requestSpecialText,
+} from "./specials.js";
 
 let specialText = [];
 let specialPos = 0;
@@ -37,14 +41,14 @@ wordInput.onkeydown = (e) => {
     const val = e.target.value.trim();
 
     // check special text
-    if (val === specialText[specialPos]) {
+    if (specialText.length > specialPos && val === specialText[specialPos]) {
       specialPos++;
       e.target.value = "";
 
       if (specialPos === specialText.length) {
         specialPos = 0;
         specialText = []; // TODO: update Special Text
-        sendSpecial(id, specialType);
+        sendSpecial(player_ids, specialType);
       }
     }
 
@@ -75,18 +79,12 @@ button1.innerHTML = "1: Scientific Names";
 button2.innerHTML = "2: Spanish";
 button3.innerHTML = "3: Gibberish";
 button1.onclick = () => {
-  specialText = ["button1"];
-  specialPos = 0;
   specialType = "scientific";
 };
 button2.onclick = () => {
-  specialText = ["button2"];
-  specialPos = 0;
   specialType = "spanish";
 };
 button3.onclick = () => {
-  specialText = ["button3"];
-  specialPos = 0;
   specialType = "gibberish";
 };
 
@@ -187,6 +185,12 @@ const update = function (delta) {
       health: getHealth(),
       wpm: getWPM(),
     });
+  }
+
+  console.log("special text", specialText, specialPos);
+  // update special text
+  if (specialText.length == 0) {
+    specialText = requestSpecialText();
   }
 };
 
