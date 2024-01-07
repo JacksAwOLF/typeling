@@ -8,7 +8,7 @@ export function incWordsTyped() {
   wordTimes.push(Date.now());
 }
 
-let health = 1000;
+let health = 10;
 let gameEnd = false;
 export function takeDamage() {
   health -= 1;
