@@ -7,6 +7,11 @@ import {
 } from "./lane.js";
 import { incWordsTyped, renderStats, startTimer, takeDamage } from "./stats.js";
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
+import { specialHighlightedSpan, sendSpecial } from "./specials.js";
+
+let specialText = [];
+let specialPos = 0;
+let specialType = 0;
 import { renderMatchingScreen, onClickCanvas } from "./menu.js";
 
 // Create the canvas
@@ -14,9 +19,6 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = canvW;
 canvas.height = canvH;
-// canvas.style =
-//   "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
-document.body.appendChild(canvas);
 
 // create the word input box
 // or should we just draw this in the canvas?
@@ -26,6 +28,20 @@ wordInput.style =
 wordInput.onkeydown = (e) => {
   if (e.key === " " || e.key === "Enter") {
     const val = e.target.value.trim();
+
+    // check special text
+    if (val === specialText[specialPos]) {
+      specialPos++;
+      e.target.value = "";
+
+      if (specialPos === specialText.length) {
+        specialPos = 0;
+        specialText = []; // TODO: update Special Text
+        sendSpecial(id, specialType);
+      }
+    }
+
+    // check lanes
     for (let i = 0; i < lanes.length; i++) {
       for (let j = 0; j < lanes[i].words.length; j++) {
         const word = lanes[i].words[j];
@@ -44,22 +60,27 @@ wordInput.onkeydown = (e) => {
 
 // special abilities paragraph and number activated buttons
 // create a div for the paragraph and buttons
-let specialText = "Start Text";
 const button1 = document.createElement("button");
 const button2 = document.createElement("button");
 const button3 = document.createElement("button");
 
 button1.innerHTML = "1: Scientific Names";
 button2.innerHTML = "2: Spanish";
-button3.innerHTML = "3: Programming";
+button3.innerHTML = "3: Gibberish";
 button1.onclick = () => {
-  specialText = "button1";
+  specialText = ["button1"];
+  specialPos = 0;
+  specialType = "scientific";
 };
 button2.onclick = () => {
-  specialText = "button2";
+  specialText = ["button2"];
+  specialPos = 0;
+  specialType = "spanish";
 };
 button3.onclick = () => {
-  specialText = "button3";
+  specialText = ["button3"];
+  specialPos = 0;
+  specialType = "gibberish";
 };
 
 const buttonDiv = document.createElement("div");
@@ -167,6 +188,12 @@ const render = function () {
 
   renderWords(ctx);
   renderStats(ctx);
+
+  // draw the special text
+  specialDiv.children[0].innerHTML = specialHighlightedSpan(
+    specialText,
+    specialPos
+  );
 };
 
 let then = Date.now();

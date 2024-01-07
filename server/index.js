@@ -82,7 +82,7 @@ class Room {
 
     io.to(this.room_id).emit("room_created", {
       room_id: this.room_id,
-      players: this.player_id,
+      players: this.player_ids,
     });
 
     this.last_queue_words = 0;
@@ -123,6 +123,12 @@ class Room {
 io.on("connection", (client) => {
   client.emit("connection_confirmed", { id: client.id });
   client.on("find_match", () => {
+    for (let queued_player of players) {
+        if (client.id === queued_player.id) {
+            return;
+        }
+    }
+
     players.push(client);
 
     if (players.length >= 2) {
