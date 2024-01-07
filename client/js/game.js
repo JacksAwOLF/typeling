@@ -1,5 +1,5 @@
 import { lanes, removeWord, addWordToLane } from "./lane.js";
-import { incWordsTpyed, displayWPM } from "./wpm.js";
+import { incWordsTyped, displayWPM } from "./wpm.js";
 
 // Create the canvas
 const canvas = document.createElement("canvas");
@@ -23,7 +23,7 @@ wordInput.onkeydown = (e) => {
         if (val === word.text && word.x < canvas.width) {
           removeWord(i, j);
           e.target.value = "";
-          incWordsTpyed();
+          incWordsTyped();
           break;
         }
       }

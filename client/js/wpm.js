@@ -1,20 +1,12 @@
-const start = Date.now();
-let wordsTyped = 0;
+let wordTimes = [];
 
-export function incWordsTpyed() {
-  wordsTyped++;
-}
-
-export function WPM() {
-  let timeElapsed = (Date.now() - start) / 60000;
-  return Math.round(wordsTyped / timeElapsed);
+export function incWordsTyped() {
+  wordTimes.push(Date.now());
 }
 
 export function displayWPM(ctx) {
-  let wpm = wordsTyped === 0 ? 0 : WPM();
-
-  // ctx.font = mainTextFont;
-  // ctx.fillStyle = mainTextColor;
-
-  ctx.fillText(wpm + " WPM", 150, 150);
+  const newList = wordTimes.filter((x) => Date.now() - x < 1000 * 60);
+  const wLastMin = newList.length;
+  wordTimes = newList;
+  ctx.fillText(newList.length + " WPM", 150, 150);
 }
