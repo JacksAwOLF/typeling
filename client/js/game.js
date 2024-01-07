@@ -62,7 +62,7 @@ const update = function (delta) {
   // add words if necessary
 
   for (let i = 0; i < lanes.length; i++) {
-    while (lanes[i].words.length < 10) {
+    while (lanes[i].words.length < 50) {
       addWordToLane(i, ctx, canvas.width);
     }
   }

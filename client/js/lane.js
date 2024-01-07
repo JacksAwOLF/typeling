@@ -54,10 +54,6 @@ export function addWordToLane(i, ctx, canvW) {
   for (let j = 0; j < lanes[i].words.length; j++)
     if (lastWord === undefined || lastWord.x < lanes[i].words[j].x)
       lastWord = lanes[i].words[j];
-  console.log(lastWord);
-  if (lastWord !== undefined) {
-    console.log(ctx.measureText(lastWord.text + " ").width);
-  }
 
   lanes[i].words.push({
     x:
