@@ -119,16 +119,24 @@ const leftWidth = 0;
 // bottomw bar to view special attack and charging
 const bottomHeight = 0;
 
+addWordToLane(0, ctx);
+
 const start = Date.now();
+let lastRequested = Date.now();
 // update variables
 const update = function (delta) {
+  if (menu) return;
   // if (txtReady) {
   // add words if necessary
   incPPS((Date.now() - start) / 1000);
 
   for (let i = 0; i < lanes.length; i++) {
-    while (lanes[i].words.length < 50) {
-      addWordToLane(i, ctx);
+    if (lanes[i].words.length < 50 && Date.now() - lastRequested > 5000) {
+      // addWordToLane(i, ctx);
+      socket.emit("request_words");
+
+      console.log("requesting words");
+      lastRequested = Date.now();
     }
   }
 

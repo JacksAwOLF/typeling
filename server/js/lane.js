@@ -1,4 +1,5 @@
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
+import { socket } from "./socket.js";
 
 // global variables
 let txtReady = false;
@@ -53,36 +54,35 @@ export function removeWord(i, j) {
 
 // add new word to lane i
 export function addWordToLane(i, ctx) {
-  ctx.font = mainTextFont;
-  ctx.fillStyle = mainTextColor;
-  lanes[i].wordInd += 1;
+  socket.on("add_words", (data) => {
+    console.log("receive words", data.words);
+    ctx.font = mainTextFont;
+    ctx.fillStyle = mainTextColor;
 
-  // pick a new line
-  if (
-    lanes[i].lineInd === -1 ||
-    lanes[i].wordInd === wordBank[lanes[i].lineInd].length
-  ) {
-    lanes[i].wordInd = 0;
-    lanes[i].lineInd = Math.floor(Math.random() * wordBank.length);
-  }
-
-  // pick next word on the line
-  let lastWord = undefined;
-  for (let j = 0; j < lanes[i].words.length; j++)
-    if (lastWord === undefined || lastWord.x < lanes[i].words[j].x)
-      lastWord = lanes[i].words[j];
-
-  lanes[i].words.push({
-    x:
+    // get furthest word to the right
+    let lastWord = undefined;
+    for (let j = 0; j < lanes[i].words.length; j++)
+      if (lastWord === undefined || lastWord.x < lanes[i].words[j].x)
+        lastWord = lanes[i].words[j];
+    let x =
       lastWord === undefined
         ? canvW
-        : lastWord.x + ctx.measureText(lastWord.text + "  ").width,
-    y: lanes[i].y,
-    text: wordBank[lanes[i].lineInd][lanes[i].wordInd],
-  });
+        : lastWord.x + ctx.measureText(lastWord.text + "  ").width;
 
-  // update last word added
-  lanes[i].lastWordInd = lanes[i].words.length - 1;
+    // add the words in data.words
+    for (let i = 0; i < data.words.length; i++) {
+      const word = data.words[i];
+
+      lanes[0].words.push({
+        x: x,
+        y: lanes[0].y,
+        // text: wordBank[lanes[0].lineInd][lanes[i].wordInd],
+        text: word,
+      });
+
+      x += ctx.measureText(word + "  ").width;
+    }
+  });
 }
 
 export function renderWords(ctx) {
