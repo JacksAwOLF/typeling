@@ -7,6 +7,7 @@ import {
 } from "./lane.js";
 import { incWordsTyped, renderStats, startTimer, takeDamage } from "./stats.js";
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
+import { renderMatchingScreen, onClickCanvas } from "./menu.js";
 
 // Create the canvas
 const canvas = document.createElement("canvas");
@@ -123,8 +124,25 @@ const update = function (delta) {
   }
 };
 
+let menu = true;
+
+canvas.addEventListener(
+  "click",
+  (e) => {
+    let x = e.pageX - 0,
+      y = e.pageY - 0;
+    onClickCanvas(x, y);
+  },
+  false
+);
+
 // render game
 const render = function () {
+  if (menu) {
+    renderMatchingScreen(ctx);
+    return;
+  }
+
   // draw background image
   if (bgReady) {
     ctx.drawImage(
