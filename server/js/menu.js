@@ -18,8 +18,6 @@ export function renderMatchingScreen(ctx) {
 }
 
 export function onClickCanvas(x, y) {
-  console.log(x, y);
-  console.log(button);
   if (
     x < button.x &&
     x > button.x - button.w &&
@@ -27,17 +25,6 @@ export function onClickCanvas(x, y) {
     y < button.y + button.h
   ) {
     // button is clicked
-    console.log("clicked button1");
-
     socket.emit("find_match");
-    console.log("clicked button2");
   }
 }
-
-socket.on("connection_confirmed", (data) => {
-  console.log("connection confirmed: ", data);
-});
-
-socket.on("room_created", (data) => {
-  console.log("room created ", data);
-});

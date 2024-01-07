@@ -209,6 +209,22 @@ const main = function () {
   requestAnimationFrame(main);
 };
 
+import { socket } from "./socket.js";
+
+let myId = "";
+let otherId = ""; // assume 2 player
+
+socket.on("connection_confirmed", (data) => {
+  myId = data.id;
+});
+
+socket.on("room_created", (data) => {
+  if (data.players[0] === myId) otherId = data.players[1];
+  else otherId = data.players[0];
+
+  menu = false;
+});
+
 // Cross-browser support for requestAnimationFrame
 const w = window;
 requestAnimationFrame =
