@@ -21,9 +21,24 @@
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
+    <button id="attack-button">ATTACK!</button>
+    <button id="find-button">FIND MATCH</button>
+    <button id="queue-button">QUEUE WORDS</button>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        socket.on("connection_confirmed", (data) => {
+            console.log("connection confirmed: " + data);
+        })
+        socket.on("room_created", (data) => {
+            console.log("room created: " + data);
+        })
+
+        // document.getElementById("attack-button").addEventListener('click', () => { socket.emit("attack")});
+        document.getElementById("find-button").addEventListener('click', () => { socket.emit("find_match")});
+        // document.getElementById("queue-button").addEventListener('click', () => { socket.emit("attack")});
+
+        
     </script>
   </body>
 </html>
