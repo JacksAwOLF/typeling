@@ -6,14 +6,12 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = 1024;
 canvas.height = 720;
-canvas.style =
-  "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
-document.body.appendChild(canvas);
 
 // create the word input box
 // or should we just draw this in the canvas?
 const wordInput = document.createElement("input");
-wordInput.style = "position: absolute; top: 80%; left: 40%;";
+wordInput.style =
+  "width: 1024px; height: 40px; font-size: 30px; text-align: center; border: None; outline: none;";
 wordInput.onkeydown = (e) => {
   if (e.key === " " || e.key === "Enter") {
     const val = e.target.value.trim();
@@ -32,7 +30,48 @@ wordInput.onkeydown = (e) => {
 
   if (e.key === " ") e.preventDefault();
 };
-document.body.appendChild(wordInput);
+
+// special abilities paragraph and number activated buttons
+// create a div for the paragraph and buttons
+let specialText = "Start Text";
+const button1 = document.createElement("button");
+const button2 = document.createElement("button");
+const button3 = document.createElement("button");
+
+button1.innerHTML = "1: Scientific Names";
+button2.innerHTML = "2: Spanish";
+button3.innerHTML = "3: Programming";
+button1.onclick = () => {
+  specialText = "button1";
+};
+button2.onclick = () => {
+  specialText = "button2";
+};
+button3.onclick = () => {
+  specialText = "button3";
+};
+
+const buttonDiv = document.createElement("div");
+buttonDiv.style = "display: flex; flex-direction: column;";
+buttonDiv.appendChild(button1);
+buttonDiv.appendChild(button2);
+buttonDiv.appendChild(button3);
+
+const specialDiv = document.createElement("div");
+specialDiv.style =
+  "display: flex; flex-direction: row; width: 1024px; justify-content: center;";
+specialDiv.appendChild(document.createElement("p"));
+specialDiv.appendChild(buttonDiv);
+
+// parent div
+const windowDiv = document.createElement("div");
+windowDiv.style =
+  "display: flex; flex-direction: column; justify-content: center; align-items: center;";
+windowDiv.appendChild(canvas);
+windowDiv.appendChild(wordInput);
+windowDiv.appendChild(specialDiv);
+
+document.body.appendChild(windowDiv);
 
 // background image
 let bgReady = false;
@@ -78,7 +117,6 @@ const update = function (delta) {
       }
     }
   }
-  // }
 };
 
 // render game
@@ -108,6 +146,9 @@ const render = function () {
   renderWords(ctx);
   renderWPM(ctx);
   renderHealth(ctx);
+
+  // draw the special text
+  specialDiv.children[0].innerHTML = specialText;
 };
 
 let then = Date.now();
@@ -117,6 +158,7 @@ const main = function () {
   then = now;
   update(delta / 1000);
   render();
+  wordInput.focus();
 
   // Request to do this again ASAP
   requestAnimationFrame(main);
