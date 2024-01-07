@@ -1,5 +1,5 @@
 import { lanes, removeWord, addWordToLane, renderWords } from "./lane.js";
-import { incWordsTyped, renderHealth, renderWPM, takeDamage } from "./wpm.js";
+import { incWordsTyped, renderStats, startTimer, takeDamage } from "./stats.js";
 import { canvW, canvH, xCutoffPercentage } from "./gvars.js";
 
 // Create the canvas
@@ -48,11 +48,6 @@ const leftWidth = 0;
 
 // bottomw bar to view special attack and charging
 const bottomHeight = 0;
-
-// set up game
-const init = function () {};
-
-const mainLaneInd = 0;
 
 // update variables
 const update = function (delta) {
@@ -104,8 +99,7 @@ const render = function () {
   ctx.stroke();
 
   renderWords(ctx);
-  renderWPM(ctx);
-  renderHealth(ctx);
+  renderStats(ctx);
 };
 
 let then = Date.now();
@@ -128,5 +122,5 @@ requestAnimationFrame =
   w.msRequestAnimationFrame ||
   w.mozRequestAnimationFrame;
 
-init();
+startTimer();
 main();
