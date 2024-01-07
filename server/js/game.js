@@ -4,6 +4,7 @@ import {
   addWordToLane,
   renderWords,
   incPPS,
+  addSpecials,
 } from "./lane.js";
 import {
   incWordsTyped,
@@ -31,6 +32,9 @@ const ctx = canvas.getContext("2d");
 canvas.width = canvW;
 canvas.height = canvH;
 
+let myId = "";
+let otherId = ""; // assume 2 player
+
 // create the word input box
 // or should we just draw this in the canvas?
 const wordInput = document.createElement("input");
@@ -45,10 +49,11 @@ wordInput.onkeydown = (e) => {
       specialPos++;
       e.target.value = "";
 
-      if (specialPos === specialText.length) {
+      if (specialPos === soecialText.length) {
         specialPos = 0;
         specialText = []; // TODO: update Special Text
-        sendSpecial(player_ids, specialType);
+        console.log("sending special", otherId, specialType);
+        sendSpecial(otherId, specialType);
       }
     }
 
@@ -187,7 +192,7 @@ const update = function (delta) {
     });
   }
 
-  console.log("special text", specialText, specialPos);
+  // console.log("special text", specialText, specialPos);
   // update special text
   if (specialText.length == 0) {
     specialText = requestSpecialText();
@@ -296,9 +301,6 @@ const main = function () {
 
 import { socket } from "./socket.js";
 
-let myId = "";
-let otherId = ""; // assume 2 player
-
 socket.on("connection_confirmed", (data) => {
   myId = data.id;
   console.log("connected", data);
@@ -314,6 +316,12 @@ socket.on("room_created", (data) => {
   button.remove();
   // let lastRequested = Date.now();
   // let lastSent = Date.now();
+});
+
+socket.on("player_attacked", (data) => {
+  console.log("recei", data);
+  if (data.player_id !== myId) return;
+  addSpecials(data.words, ctx);
 });
 
 // Cross-browser support for requestAnimationFrame

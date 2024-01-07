@@ -106,7 +106,7 @@ class Room {
         : type === "spanish"
         ? spanish
         : gibberish;
-    assert(wordbank.words !== null);
+    // assert(wordbank.words !== null);
 
     io.to(this.room_id).emit("player_attacked", {
       player_id: player_id,

@@ -17,6 +17,11 @@ export let lanes = [
     words: [],
     pps: 20, // pixels per second
   },
+  {
+    y: mainLaneY + 50,
+    words: [],
+    pps: 20,
+  },
 ];
 // y=\left(\frac{1}{4}x^{1.5}+20\right)
 let lastModVal = -1;
@@ -52,6 +57,34 @@ export function removeWord(i, j) {
   if (lanes[i].lastWordInd > j) lanes[i].lastWordInd -= 1; // update previous word
 }
 
+export function addSpecials(words, ctx) {
+  ctx.font = mainTextFont;
+  ctx.fillStyle = mainTextColor;
+
+  // get furthest word to the right
+  let lastWord = undefined;
+  for (let j = 0; j < lanes[1].words.length; j++)
+    if (lastWord === undefined || lastWord.x < lanes[1].words[j].x)
+      lastWord = lanes[1].words[j];
+  let x =
+    lastWord === undefined
+      ? canvW
+      : lastWord.x + ctx.measureText(lastWord.text + "  ").width;
+
+  // add the words in data.words
+  for (let j = 0; j < words.length; j++) {
+    const word = words[j];
+
+    lanes[1].words.push({
+      x: x,
+      y: lanes[1].y,
+      text: word,
+    });
+
+    x += ctx.measureText(word + "  ").width;
+  }
+}
+
 // add new word to lane i
 export function addWordToLane(i, ctx) {
   socket.on("add_words", (data) => {
@@ -70,12 +103,12 @@ export function addWordToLane(i, ctx) {
         : lastWord.x + ctx.measureText(lastWord.text + "  ").width;
 
     // add the words in data.words
-    for (let i = 0; i < data.words.length; i++) {
-      const word = data.words[i];
+    for (let j = 0; j < data.words.length; j++) {
+      const word = data.words[j];
 
-      lanes[0].words.push({
+      lanes[i].words.push({
         x: x,
-        y: lanes[0].y,
+        y: lanes[i].y,
         // text: wordBank[lanes[0].lineInd][lanes[i].wordInd],
         text: word,
       });

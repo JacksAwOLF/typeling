@@ -21,8 +21,7 @@ export function specialHighlightedSpan(words, specialPos) {
   return h;
 }
 
-export function sendSpecial(player_ids, type) {
-  const player_id = player_ids[Math.floor(Math.random() * player_ids.length)];
+export function sendSpecial(player_id, type) {
   socket.emit("attack_player", { player_id, type });
 }
 
