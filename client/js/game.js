@@ -1,5 +1,5 @@
-import { lanes, removeWord, addWordToLane } from "./lane.js";
-import { incWordsTyped, displayWPM } from "./wpm.js";
+import { lanes, removeWord, addWordToLane, renderWords } from "./lane.js";
+import { incWordsTyped, renderHealth, renderWPM, takeDamage } from "./wpm.js";
 
 // Create the canvas
 const canvas = document.createElement("canvas");
@@ -42,31 +42,17 @@ bgImage.onload = function () {
 };
 bgImage.src = "images/plantsVzombies.jpeg";
 
-// font and color for main stream of words
-// should i add this to the lane object?
-const mainTextFont = "30px Comic Sans Ms";
-const mainTextColor = "black";
-
 // left side bar for viewing other player info
 const leftWidth = 0;
 
 // bottomw bar to view special attack and charging
 const bottomHeight = 0;
 
-// tower game object
-const tower = {};
-
-// words game objects
-let words = [];
-const wordHeight = 20;
-const mainLaneY = (window.innerHeight - wordHeight) / 2;
+// percentage of screen where words deal damage
+const xCutoffPercentage = 0.25;
 
 // set up game
-const init = function () {
-  // tower
-  tower.xCutoffPercentage = 0.25;
-  tower.health = 10;
-};
+const init = function () {};
 
 const mainLaneInd = 0;
 
@@ -74,10 +60,9 @@ const mainLaneInd = 0;
 const update = function (delta) {
   // if (txtReady) {
   // add words if necessary
-  ctx.font = mainTextFont;
-  ctx.fillStyle = mainTextColor;
+
   for (let i = 0; i < lanes.length; i++) {
-    while (lanes[i].words.length < 50) {
+    while (lanes[i].words.length < 10) {
       addWordToLane(i, ctx, canvas.width);
     }
   }
@@ -87,8 +72,8 @@ const update = function (delta) {
     for (let j = 0; j < lanes[i].words.length; j++) {
       lanes[i].words[j].x -= lanes[i].pps * delta;
       // check if hit the tower
-      if (lanes[i].words[j].x < canvas.width * tower.xCutoffPercentage) {
-        tower.health -= 1;
+      if (lanes[i].words[j].x < canvas.width * xCutoffPercentage) {
+        takeDamage();
         removeWord(i, j);
       }
     }
@@ -114,25 +99,15 @@ const render = function () {
 
   // draw tower vertical line
   ctx.beginPath();
-  const lineX = canvas.width * tower.xCutoffPercentage;
+  const lineX = canvas.width * xCutoffPercentage;
   ctx.moveTo(lineX, 0);
   ctx.lineTo(lineX, canvas.height);
   ctx.lineWidth = 10;
   ctx.stroke();
 
-  // draw the lanes
-
-  // draw the words
-  ctx.font = mainTextFont;
-  ctx.fillStyle = mainTextColor;
-  for (let i = 0; i < lanes.length; i++) {
-    for (let j = 0; j < lanes[i].words.length; j++) {
-      const word = lanes[i].words[j];
-      ctx.fillText(word.text, word.x, word.y);
-    }
-  }
-
-  displayWPM(ctx);
+  renderWords(ctx);
+  renderWPM(ctx);
+  renderHealth(ctx);
 };
 
 let then = Date.now();

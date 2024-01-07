@@ -1,9 +1,13 @@
 // global variables
 let txtReady = false;
 let wordBank = [];
+const wordHeight = 20;
+const mainLaneY = (window.innerHeight - wordHeight) / 2;
+const mainTextFont = "30px Comic Sans Ms";
+const mainTextColor = "black";
 export let lanes = [
   {
-    y: 300,
+    y: mainLaneY,
     getNewInd: true,
     lineInd: -1,
     wordInd: -1,
@@ -32,6 +36,8 @@ export function removeWord(i, j) {
 
 // add new word to lane i
 export function addWordToLane(i, ctx, canvW) {
+  ctx.font = mainTextFont;
+  ctx.fillStyle = mainTextColor;
   lanes[i].wordInd += 1;
 
   // pick a new line
@@ -48,6 +54,10 @@ export function addWordToLane(i, ctx, canvW) {
   for (let j = 0; j < lanes[i].words.length; j++)
     if (lastWord === undefined || lastWord.x < lanes[i].words[j].x)
       lastWord = lanes[i].words[j];
+  console.log(lastWord);
+  if (lastWord !== undefined) {
+    console.log(ctx.measureText(lastWord.text + " ").width);
+  }
 
   lanes[i].words.push({
     x:
@@ -60,4 +70,15 @@ export function addWordToLane(i, ctx, canvW) {
 
   // update last word added
   lanes[i].lastWordInd = lanes[i].words.length - 1;
+}
+
+export function renderWords(ctx) {
+  ctx.font = mainTextFont;
+  ctx.fillStyle = mainTextColor;
+  for (let i = 0; i < lanes.length; i++) {
+    for (let j = 0; j < lanes[i].words.length; j++) {
+      const word = lanes[i].words[j];
+      ctx.fillText(word.text, word.x, word.y);
+    }
+  }
 }
