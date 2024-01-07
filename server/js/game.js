@@ -110,6 +110,12 @@ windowDiv.appendChild(canvas);
 windowDiv.appendChild(wordInput);
 windowDiv.appendChild(specialDiv);
 
+const button = document.createElement("button");
+button.onclick = onClickCanvas;
+button.style =
+  "position: absolute; top: 45%; left: 45%; width: 10%; height: 10%;";
+windowDiv.appendChild(button);
+
 document.body.appendChild(windowDiv);
 
 // background image
@@ -128,12 +134,18 @@ const bottomHeight = 0;
 
 addWordToLane(0, ctx);
 
-const start = Date.now();
+let start = Date.now();
 let lastRequested = Date.now();
 let lastSent = Date.now();
+
+let gameWon = false;
 // update variables
 const update = function (delta) {
   if (menu) return;
+
+  if (getHealth() === 0 || gameWon) {
+    return;
+  }
   // if (txtReady) {
   // add words if necessary
   incPPS((Date.now() - start) / 1000);
@@ -156,11 +168,19 @@ const update = function (delta) {
       if (lanes[i].words[j].x < canvas.width * xCutoffPercentage) {
         takeDamage();
         removeWord(i, j);
+
+        if (getHealth() === 0) {
+          socket.emit("transmit_info_to_room", {
+            player_id: myId,
+            health: getHealth(),
+            wpm: getWPM(),
+          });
+        }
       }
     }
   }
 
-  if (Date.now() - lastSent > 1000) {
+  if (Date.now() - lastSent > 500) {
     lastSent = Date.now();
     socket.emit("transmit_info_to_room", {
       player_id: myId,
@@ -174,15 +194,16 @@ const update = function (delta) {
 
 let menu = true;
 
-canvas.addEventListener(
-  "click",
-  (e) => {
-    let x = e.pageX - 0,
-      y = e.pageY - 0;
-    onClickCanvas(x, y);
-  },
-  false
-);
+// canvas.addEventListener(
+//   "click",
+//   (e) => {
+//     // console.log(e);
+//     // let x = e.pageX - ,
+//     //   y = e.pageY - 0;
+//     onClickCanvas(x, y);
+//   },
+//   false
+// );
 
 let otherHealth = 0;
 let otherWPM = 0;
@@ -191,6 +212,10 @@ socket.on("transmit_info_to_room", (data) => {
   if (data.player_id === myId) return;
   otherHealth = data.health;
   otherWPM = data.wpm;
+
+  if (otherHealth === 0) {
+    gameWon = true;
+  }
   console.log(data);
 });
 
@@ -238,6 +263,18 @@ const render = function () {
     specialText,
     specialPos
   );
+
+  if (gameWon) {
+    ctx.fillStyle = "rgba(50, 50, 50, 0.7)";
+    ctx.fillRect(0, 0, canvW, canvH);
+
+    ctx.font = "100px Times New Roman";
+    ctx.fillStyle = "white";
+    const dim = ctx.measureText("Game Won!");
+    const hh = dim.actualBoundingBoxAscent - dim.actualBoundingBoxDescent;
+    ctx.fillText("Game Won!", (canvW - dim.width) / 2, (canvH - hh) / 2);
+    return;
+  }
 };
 
 let then = Date.now();
@@ -260,13 +297,19 @@ let otherId = ""; // assume 2 player
 
 socket.on("connection_confirmed", (data) => {
   myId = data.id;
+  console.log("connected", data);
 });
 
 socket.on("room_created", (data) => {
   if (data.players[0] === myId) otherId = data.players[1];
   else otherId = data.players[0];
-
   menu = false;
+  console.log("room created", data);
+
+  start = Date.now();
+  button.remove();
+  // let lastRequested = Date.now();
+  // let lastSent = Date.now();
 });
 
 // Cross-browser support for requestAnimationFrame
